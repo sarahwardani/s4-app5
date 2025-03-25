@@ -6,6 +6,7 @@ package app6;
  *  l'analyseur lexical
  */
 public class Terminal {
+  public String chaine;
 
 
 // Constantes et attributs
@@ -16,7 +17,7 @@ public class Terminal {
   *   pour l'initalisation d'attributs 
  */	
   public Terminal( ) {   // arguments possibles
-     //
+     chaine = "";
   }
 
 }

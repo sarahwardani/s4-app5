@@ -8,12 +8,14 @@ public class AnalLex {
 
 // Attributs
 //  ...
+public String chaine;
+public int readptr = 0;
 
 	
 /** Constructeur pour l'initialisation d'attribut(s)
  */
-  public AnalLex( ) {  // arguments possibles
-    //
+  public AnalLex(String string) {  // arguments possibles
+    chaine = string;
   }
 
 
@@ -22,22 +24,122 @@ public class AnalLex {
       true s'il reste encore au moins un terminal qui n'a pas ete retourne 
  */
   public boolean resteTerminal( ) {
-    //
+    if (readptr == chaine.length() -1 && chaine.charAt(readptr) == '_') return false;
+    return readptr < chaine.length();
   }
-  
+
+  public boolean isDigit(char c ) {
+    return c >= '0' && c <= '9';
+  }
+
+  public boolean isOperator(char c ) {
+    return c == '+' || c == '-' || c == '*' || c == '/' || c == '(' || c == ')';
+  }
+
+  public boolean isLetterMaj(char c ) {
+    return (c >= 'A' && c <= 'Z');
+  }
+
+  public boolean isLetter(char c ) {
+    return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
+  }
+
+  public char readChar(){
+    int temp = readptr;
+    readptr++;
+    return chaine.charAt(temp);
+  }
+
   
 /** prochainTerminal() retourne le prochain terminal
       Cette methode est une implementation d'un AEF
  */  
   public Terminal prochainTerminal( ) {
-     //
+     int etat = 0;
+     Terminal currTerminal = new Terminal();
+     char c;
+     boolean continu = true;
+
+     while(continu && resteTerminal()){
+       switch (etat) {
+         case 0:
+           c = readChar();
+
+           if (isOperator(c)) {
+             currTerminal.chaine +=c;
+             continu = false;
+           }
+           else if (isLetterMaj(c)) {
+             currTerminal.chaine +=c;
+             etat = 1;
+           }
+           else if (isDigit(c)) {
+             currTerminal.chaine +=c;
+             etat = 3;
+           }
+           else {
+             ErreurLex("erreur : ni operande, ni chiffre, ni id");
+             continu = false;
+           }
+           break;
+
+         case 1: // verifier si operande valide
+           c = readChar();
+
+           if (isLetter(c)) {
+             etat = 1;
+             currTerminal.chaine +=c;
+           }
+           else if (c == '_') {
+             etat = 2;
+             currTerminal.chaine +=c;
+           }
+           else { // on retourne l'operande
+             readptr--;
+             continu = false;
+           }
+           break;
+
+         case 2: // rendu au _ dans l'operande, verifie si __
+           c = readChar();
+
+           if (c == '_') { // erreur car 2 _ de suite
+             ErreurLex("erreur : identifiant avec __");
+          //   currTerminal.chaine.;
+             continu = false;
+           }
+           else if (isLetter(c)) { // on continue de verifier si operande valide
+             etat = 1;
+             currTerminal.chaine +=c;
+           }
+           else { // on retourne l'operande valide
+             readptr--;
+             continu = false;
+           }
+           break;
+
+         case 3: // verifier si chiffre valide
+           c = readChar();
+
+           if (isDigit(c)) {
+             etat = 3;
+             currTerminal.chaine +=c;
+           }
+           else { // on retourne le chiffre
+             readptr--;
+             continu = false;
+           }
+           break;
+       }
+     }
+     return currTerminal;
   }
 
  
 /** ErreurLex() envoie un message d'erreur lexicale
  */ 
-  public void ErreurLex(String s) {	
-     //
+  public void ErreurLex(String s) {
+    System.out.println(s) ;
   }
 
   

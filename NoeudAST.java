@@ -18,14 +18,14 @@ public class NoeudAST extends ElemAST {
   /** Evaluation de noeud d'AST
    */
   public int EvalAST( ) {
-     //
+     return 0;
   }
 
 
   /** Lecture de noeud d'AST
    */
   public String LectAST( ) {
-     //
+     return "";
   }
 
 }
