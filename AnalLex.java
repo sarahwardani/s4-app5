@@ -9,13 +9,16 @@ public class AnalLex {
 // Attributs
 //  ...
 public String chaine;
-public int readptr = 0;
+public int readptr;
+public int chaineLongueur;
 
 	
 /** Constructeur pour l'initialisation d'attribut(s)
  */
   public AnalLex(String string) {  // arguments possibles
     chaine = string;
+    chaineLongueur = chaine.length();
+    readptr = 0;
   }
 
 
@@ -24,7 +27,7 @@ public int readptr = 0;
       true s'il reste encore au moins un terminal qui n'a pas ete retourne 
  */
   public boolean resteTerminal( ) {
-    if (readptr == chaine.length() -1 && chaine.charAt(readptr) == '_') return false;
+    if (readptr == chaineLongueur-1 && chaine.charAt(readptr) == '_') return false;
     return readptr < chaine.length();
   }
 
@@ -67,18 +70,22 @@ public int readptr = 0;
 
            if (isOperator(c)) {
              currTerminal.chaine +=c;
+             currTerminal.type = Etype.op;
              continu = false;
            }
            else if (isLetterMaj(c)) {
              currTerminal.chaine +=c;
+             currTerminal.type = Etype.id;
              etat = 1;
            }
            else if (isDigit(c)) {
              currTerminal.chaine +=c;
-             etat = 3;
+             currTerminal.type = Etype.nb;
+             etat = 4;
            }
            else {
              ErreurLex("erreur : ni operande, ni chiffre, ni id");
+             currTerminal.type = Etype.erreur;
              continu = false;
            }
            break;
@@ -94,38 +101,53 @@ public int readptr = 0;
              etat = 2;
              currTerminal.chaine +=c;
            }
-           else { // on retourne l'operande
+           else { // return the operand
              readptr--;
              continu = false;
            }
            break;
 
-         case 2: // rendu au _ dans l'operande, verifie si __
+         case 2: // current char is _, verify if another _ is after
            c = readChar();
 
-           if (c == '_') { // erreur car 2 _ de suite
-             ErreurLex("erreur : identifiant avec __");
-          //   currTerminal.chaine.;
-             continu = false;
+           if (c == '_') {
+
+             currTerminal.chaine +=c;
+             etat = 3; // error state __
            }
            else if (isLetter(c)) { // on continue de verifier si operande valide
              etat = 1;
              currTerminal.chaine +=c;
            }
-           else { // on retourne l'operande valide
+           else { // return valid operand
              readptr--;
              continu = false;
            }
            break;
 
-         case 3: // verifier si chiffre valide
+         case 3: // verify when error id stops et return it with error
+           c = readChar();
+
+           if (isLetter(c) || c == '_') {
+           etat = 3;
+           currTerminal.chaine +=c;
+           }
+           else {
+             ErreurLex("erreur : identifiant avec __");
+             currTerminal.type = Etype.erreur;
+             readptr--;
+             continu = false;
+           }
+           break;
+
+         case 4: // verify number ends and return it
            c = readChar();
 
            if (isDigit(c)) {
-             etat = 3;
+             etat = 4;
              currTerminal.chaine +=c;
            }
-           else { // on retourne le chiffre
+           else {
              readptr--;
              continu = false;
            }
@@ -160,7 +182,7 @@ public int readptr = 0;
     Terminal t = null;
     while(lexical.resteTerminal()){
       t = lexical.prochainTerminal();
-      toWrite +=t.chaine + "\n" ;  // toWrite contient le resultat
+      toWrite +=t.chaine + " type: " + t.type + "\n" ;  // toWrite contient le resultat
     }				   //    d'analyse lexicale
     System.out.println(toWrite); 	// Ecriture de toWrite sur la console
     Writer w = new Writer(args[1],toWrite); // Ecriture de toWrite dans fichier args[1]

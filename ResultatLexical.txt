@@ -1,2 +1,3 @@
-Bb_B_
-S
+Bb_B__S type: erreur
++ type: op
+3435453 type: nb
