@@ -6,19 +6,20 @@ package app6;
  */
 public class FeuilleAST extends ElemAST {
 
-  // Attribut(s)
+private Terminal t;
 
 
 /**Constructeur pour l'initialisation d'attribut(s)
  */
-  public FeuilleAST( ) {  // avec arguments
-    //
+  public FeuilleAST(Terminal terminal) {  // avec arguments
+    t = terminal;
   }
 
 
   /** Evaluation de feuille d'AST
    */
   public int EvalAST( ) {
+      if (t.type == Etype.nb) return Integer.parseInt(t.chaine);
     return 0;
   }
 
@@ -26,7 +27,7 @@ public class FeuilleAST extends ElemAST {
  /** Lecture de chaine de caracteres correspondant a la feuille d'AST
   */
   public String LectAST( ) {
-    return "";
+    return t.chaine;
   }
 
 }

@@ -57,7 +57,7 @@ public int chaineLongueur;
 /** prochainTerminal() retourne le prochain terminal
       Cette methode est une implementation d'un AEF
  */  
-  public Terminal prochainTerminal( ) {
+  public Terminal prochainTerminal( ) throws Exception {
      int etat = 0;
      Terminal currTerminal = new Terminal();
      char c;
@@ -81,12 +81,11 @@ public int chaineLongueur;
            else if (isDigit(c)) {
              currTerminal.chaine +=c;
              currTerminal.type = Etype.nb;
-             etat = 4;
+             etat = 3;
            }
            else {
              ErreurLex("erreur : ni operande, ni chiffre, ni id");
-             currTerminal.type = Etype.erreur;
-             continu = false;
+             //continu = false;
            }
            break;
 
@@ -111,9 +110,7 @@ public int chaineLongueur;
            c = readChar();
 
            if (c == '_') {
-
-             currTerminal.chaine +=c;
-             etat = 3; // error state __
+             ErreurLex("erreur : identifiant avec __");
            }
            else if (isLetter(c)) { // on continue de verifier si operande valide
              etat = 1;
@@ -125,26 +122,11 @@ public int chaineLongueur;
            }
            break;
 
-         case 3: // verify when error id stops et return it with error
-           c = readChar();
-
-           if (isLetter(c) || c == '_') {
-           etat = 3;
-           currTerminal.chaine +=c;
-           }
-           else {
-             ErreurLex("erreur : identifiant avec __");
-             currTerminal.type = Etype.erreur;
-             readptr--;
-             continu = false;
-           }
-           break;
-
-         case 4: // verify number ends and return it
+         case 3: // verify number ends and return it
            c = readChar();
 
            if (isDigit(c)) {
-             etat = 4;
+             etat = 3;
              currTerminal.chaine +=c;
            }
            else {
@@ -160,8 +142,8 @@ public int chaineLongueur;
  
 /** ErreurLex() envoie un message d'erreur lexicale
  */ 
-  public void ErreurLex(String s) {
-    System.out.println(s) ;
+  public void ErreurLex(String s) throws Exception {
+    throw new Exception(s);
   }
 
   
@@ -180,9 +162,16 @@ public int chaineLongueur;
 
     // Execution de l'analyseur lexical
     Terminal t = null;
-    while(lexical.resteTerminal()){
-      t = lexical.prochainTerminal();
-      toWrite +=t.chaine + " type: " + t.type + "\n" ;  // toWrite contient le resultat
+    Boolean error = false;
+    while(lexical.resteTerminal() && !error){
+      try{
+        t = lexical.prochainTerminal();
+        toWrite +=t.chaine + " type: " + t.type + "\n" ;  // toWrite contient le resultat
+      }
+      catch(Exception e){
+        System.out.println(e.getMessage());
+        error = true;
+      }
     }				   //    d'analyse lexicale
     System.out.println(toWrite); 	// Ecriture de toWrite sur la console
     Writer w = new Writer(args[1],toWrite); // Ecriture de toWrite dans fichier args[1]
