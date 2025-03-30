@@ -21,7 +21,7 @@ public class NoeudAST extends ElemAST {
 
   /** Evaluation de noeud d'AST
    */
-  public int EvalAST( ) {
+  public int EvalAST( ) throws Exception {
     int operande1 = filsG.EvalAST();
     int operande2 = filsD.EvalAST();
     int resultat = 0;
@@ -47,6 +47,12 @@ public class NoeudAST extends ElemAST {
    */
   public String LectAST( ) {
      return "(" + filsG.LectAST() + " " + op.chaine + " " + filsD.LectAST() + ")";
+  }
+
+  /** Lecture de noeud d'AST
+   */
+  public String PostfixAST( ) {
+     return filsG.PostfixAST() + " " + filsD.PostfixAST() + " "+ op.chaine;
   }
 
 }

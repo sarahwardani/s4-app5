@@ -1,2 +1,2 @@
-Lecture de l'AST trouve : (8 / ((4 / 2) + 2))
-Evaluation de l'AST trouve : 2
+Lecture de l'AST trouve : ((55 - 47) * (14 / 2))
+Evaluation de l'AST trouve : 56

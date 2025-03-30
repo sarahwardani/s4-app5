@@ -18,15 +18,21 @@ private Terminal t;
 
   /** Evaluation de feuille d'AST
    */
-  public int EvalAST( ) {
+  public int EvalAST( ) throws Exception{
       if (t.type == Etype.nb) return Integer.parseInt(t.chaine);
-    return 0;
+      else throw new Exception("Can't evaluate a type" + t.type);
   }
 
 
  /** Lecture de chaine de caracteres correspondant a la feuille d'AST
   */
   public String LectAST( ) {
+    return t.chaine;
+  }
+
+  /** Lecture de chaine de caracteres correspondant a la feuille d'AST
+  */
+  public String PostfixAST( ) {
     return t.chaine;
   }
 

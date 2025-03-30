@@ -3,10 +3,13 @@ package app6;
 /** @author Ahmed Khoumsi */
 
 /** Cette classe effectue l'analyse syntaxique
+ *  Grammaire:
+ *      E -> T [+|- E]
+ *      T -> F [*|/ T]
+ *      F -> operande | E    où operande = id | nb
  */
 public class DescenteRecursive {
 
-    public String chaine;
     Reader r;
     AnalLex lexical;
     Terminal currTerminal;
@@ -50,7 +53,6 @@ private void readTerminal() throws Exception {
     }
 }
 
-// need to readTerminal to set the currTerminal before calling a recursive
 private ElemAST E() throws Exception {
     ElemAST noeud1 = T();
     if (currTerminal.type == Etype.op_add || currTerminal.type == Etype.op_sub){
@@ -84,11 +86,11 @@ private ElemAST F() throws Exception {
         readTerminal();
         noeud1 = E();
         if (currTerminal.type != Etype.op_par_fermante) {
-            ErreurSynt("erreur syntaxe: Recue un " + currTerminal.chaine + " alors que devait avoir une ) ");
+            ErreurSynt("Sequence before error: " + noeud1.LectAST() + "\nCause: needed a ), received " + currTerminal.chaine);
         }
     } else noeud1 = new FeuilleAST(currTerminal); // to initialize
     if (currTerminal.type != Etype.nb && currTerminal.type != Etype.id && currTerminal.type != Etype.op_par_fermante) {
-        ErreurSynt("erreur syntaxe: Received " + currTerminal.chaine + " but should be an operande");
+        ErreurSynt("Cause: needed a ), number or identifer, received " + currTerminal.chaine);
     }
     readTerminal();
     return noeud1;
@@ -99,7 +101,7 @@ private ElemAST F() throws Exception {
  */
 public void ErreurSynt(String s) throws Exception
 {
-    throw new Exception(s);
+    throw new Exception("Erreur syntaxe:\n" + s);
 }
 
 
@@ -109,6 +111,7 @@ public void ErreurSynt(String s) throws Exception
   public static void main(String[] args) {
     String toWriteLect = "";
     String toWriteEval = "";
+    String toWritePostfix = "";
 
     System.out.println("Debut d'analyse syntaxique");
     if (args.length == 0){
@@ -123,6 +126,8 @@ public void ErreurSynt(String s) throws Exception
       System.out.println(toWriteLect);
       toWriteEval += "Evaluation de l'AST trouve : " + RacineAST.EvalAST() + "\n";
       System.out.println(toWriteEval);
+      toWritePostfix += "Expression postfix de l'AST trouve : " + RacineAST.PostfixAST() + "\n";
+      System.out.println(toWritePostfix);
       Writer w = new Writer(args[1],toWriteLect+toWriteEval); // Ecriture de toWrite
                                                               // dans fichier args[1]
     } catch (Exception e) {

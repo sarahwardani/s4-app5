@@ -6,8 +6,6 @@ package app6;
  */
 public class AnalLex {
 
-// Attributs
-//  ...
 public String chaine;
 public int readptr;
 public int chaineLongueur;
@@ -97,8 +95,7 @@ public int chaineLongueur;
              etat = 3;
            }
            else {
-             ErreurLex("erreur : ni operande, ni chiffre, ni id");
-             //continu = false;
+             ErreurLex("Sequence before error: " + currTerminal.chaine + "\nCause: needed a letter, number, operator or identifer, received " + c);
            }
            break;
 
@@ -106,7 +103,7 @@ public int chaineLongueur;
            c = readChar();
 
            if (isLetter(c)) {
-             etat = 1;
+             //etat = 1;
              currTerminal.chaine +=c;
            }
            else if (c == '_') {
@@ -123,7 +120,7 @@ public int chaineLongueur;
            c = readChar();
 
            if (c == '_') {
-             ErreurLex("erreur : identifiant avec __");
+             ErreurLex("Sequence before error: " + currTerminal.chaine + "\n Cause: needed a letter, received a _");
            }
            else if (isLetter(c)) { // on continue de verifier si operande valide
              etat = 1;
@@ -135,11 +132,11 @@ public int chaineLongueur;
            }
            break;
 
-         case 3: // verify number ends and return it
+         case 3: // verify when the number ends and return it
            c = readChar();
 
            if (isDigit(c)) {
-             etat = 3;
+             //etat = 3;
              currTerminal.chaine +=c;
            }
            else {
@@ -156,7 +153,7 @@ public int chaineLongueur;
 /** ErreurLex() envoie un message d'erreur lexicale
  */ 
   public void ErreurLex(String s) throws Exception {
-    throw new Exception(s);
+    throw new Exception("Erreur lexicale:\n" + s);
   }
 
   
