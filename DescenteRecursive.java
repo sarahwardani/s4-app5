@@ -29,14 +29,12 @@ public ElemAST AnalSynt( ) throws Exception {
     try{
         readTerminal();
     } catch (Exception e) {
-     //   System.out.println(e.getMessage());
         throw new Exception(e);
     }
 
     try{
         racineAST = E();
     } catch (Exception e) {
-       // System.out.println(e.getMessage());
         throw new Exception(e);
     }
     return racineAST;
@@ -48,14 +46,14 @@ private void readTerminal() throws Exception {
         if (lexical.resteTerminal()) currTerminal = lexical.prochainTerminal();
     }
     catch(Exception e){
-      //  System.out.println(e.getMessage());
         throw new Exception(e);
     }
 }
 
+// need to readTerminal to set the currTerminal before calling a recursive
 private ElemAST E() throws Exception {
     ElemAST noeud1 = T();
-    if (currTerminal.type == Etype.op){
+    if (currTerminal.type == Etype.op_add || currTerminal.type == Etype.op_sub){
         Terminal operateur = currTerminal;
         readTerminal();
         ElemAST noeud2 = E();
@@ -65,12 +63,34 @@ private ElemAST E() throws Exception {
 }
 
 private ElemAST T() throws Exception {
+    ElemAST noeud1 = F();
+    if (currTerminal.type == Etype.op_mult || currTerminal.type == Etype.op_div){
+        Terminal operateur = currTerminal;
+        readTerminal();
+        ElemAST noeud2 = T();
+        noeud1 = new NoeudAST(operateur, noeud1, noeud2);
+    }
+
+    return noeud1;
+}
+private ElemAST F() throws Exception {
     ElemAST noeud1;
-    if (currTerminal.type != Etype.nb && currTerminal.type != Etype.id) {
+    if (currTerminal.type == Etype.id || currTerminal.type == Etype.nb) { // operande
+        noeud1 = new FeuilleAST(currTerminal);
+        readTerminal();
+        return noeud1;
+    }
+    if (currTerminal.type == Etype.op_par_ouvrante) { // operande
+        noeud1 = E();
+        if (currTerminal.type != Etype.op_par_fermante) {
+            ErreurSynt("erreur syntaxe: Recue un " + currTerminal.chaine + " alors que devait avoir une ) ");
+        }
+        readTerminal();
+    } else noeud1 = new FeuilleAST(currTerminal); // to initialize
+    if (currTerminal.type != Etype.nb && currTerminal.type != Etype.id ) {
         ErreurSynt("erreur syntaxe");
     }
-    noeud1 = new FeuilleAST(currTerminal);
-    readTerminal();
+   // readTerminal();
     return noeud1;
 }
 

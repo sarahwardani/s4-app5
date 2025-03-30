@@ -1,2 +1,2 @@
-Lecture de l'AST trouve : (4 / (2 + 3))
-Evaluation de l'AST trouve : 0
+Lecture de l'AST trouve : (3 + ((4 / 2) + 3))
+Evaluation de l'AST trouve : 8

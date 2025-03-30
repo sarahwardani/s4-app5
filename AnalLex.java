@@ -31,19 +31,32 @@ public int chaineLongueur;
     return readptr < chaine.length();
   }
 
-  public boolean isDigit(char c ) {
+  private boolean isDigit(char c ) {
     return c >= '0' && c <= '9';
   }
 
-  public boolean isOperator(char c ) {
+  private boolean isOperator(char c ) {
     return c == '+' || c == '-' || c == '*' || c == '/' || c == '(' || c == ')';
   }
 
-  public boolean isLetterMaj(char c ) {
+  private Etype typeOp(char c){
+    Etype type;
+      type = switch (c) {
+          case '+' -> Etype.op_add;
+          case '-' -> Etype.op_sub;
+          case '*' -> Etype.op_mult;
+          case '/' -> Etype.op_div;
+          case '(' -> Etype.op_par_ouvrante;
+          case ')' -> Etype.op_par_fermante;
+          default -> Etype.autre;
+      };
+      return type;
+  }
+  private boolean isLetterMaj(char c ) {
     return (c >= 'A' && c <= 'Z');
   }
 
-  public boolean isLetter(char c ) {
+  private boolean isLetter(char c ) {
     return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
   }
 
@@ -70,7 +83,7 @@ public int chaineLongueur;
 
            if (isOperator(c)) {
              currTerminal.chaine +=c;
-             currTerminal.type = Etype.op;
+             currTerminal.type = typeOp(c);
              continu = false;
            }
            else if (isLetterMaj(c)) {
