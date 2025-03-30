@@ -76,7 +76,7 @@ private ElemAST T() throws Exception {
     return noeud1;
 }
 private ElemAST F() throws Exception {
-    ElemAST noeud1;
+    ElemAST noeud1 = null;
     if (currTerminal.type == Etype.id || currTerminal.type == Etype.nb) { // operande
         noeud1 = new FeuilleAST(currTerminal);
         readTerminal();
@@ -88,10 +88,11 @@ private ElemAST F() throws Exception {
         if (currTerminal.type != Etype.op_par_fermante) {
             ErreurSynt("Sequence before error: " + noeud1.LectAST() + "\nCause: needed a ), received " + currTerminal.chaine);
         }
-    } else noeud1 = new FeuilleAST(currTerminal); // to initialize
-    if (currTerminal.type != Etype.nb && currTerminal.type != Etype.id && currTerminal.type != Etype.op_par_fermante) {
-        ErreurSynt("Cause: needed a ), number or identifer, received " + currTerminal.chaine);
+        readTerminal();
+        return noeud1;
     }
+
+    ErreurSynt("Cause: needed number or identifer, received " + currTerminal.chaine);
     readTerminal();
     return noeud1;
 }

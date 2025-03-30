@@ -20,7 +20,7 @@ private Terminal t;
    */
   public int EvalAST( ) throws Exception{
       if (t.type == Etype.nb) return Integer.parseInt(t.chaine);
-      else throw new Exception("Can't evaluate a type" + t.type);
+      else throw new Exception("Must be a number, provided a " + t.type);
   }
 
 
