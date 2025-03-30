@@ -81,16 +81,16 @@ private ElemAST F() throws Exception {
         return noeud1;
     }
     if (currTerminal.type == Etype.op_par_ouvrante) { // operande
+        readTerminal();
         noeud1 = E();
         if (currTerminal.type != Etype.op_par_fermante) {
             ErreurSynt("erreur syntaxe: Recue un " + currTerminal.chaine + " alors que devait avoir une ) ");
         }
-        readTerminal();
     } else noeud1 = new FeuilleAST(currTerminal); // to initialize
-    if (currTerminal.type != Etype.nb && currTerminal.type != Etype.id ) {
-        ErreurSynt("erreur syntaxe");
+    if (currTerminal.type != Etype.nb && currTerminal.type != Etype.id && currTerminal.type != Etype.op_par_fermante) {
+        ErreurSynt("erreur syntaxe: Received " + currTerminal.chaine + " but should be an operande");
     }
-   // readTerminal();
+    readTerminal();
     return noeud1;
 }
 
