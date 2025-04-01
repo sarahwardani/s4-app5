@@ -6,7 +6,7 @@ package app6;
  *  Grammaire:
  *      E -> T [+|- E]
  *      T -> F [*|/ T]
- *      F -> operande | E    où operande = id | nb
+ *      F -> operande | (E)    où operande = id | nb
  */
 public class DescenteRecursive {
 

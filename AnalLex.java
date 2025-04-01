@@ -7,8 +7,8 @@ package app6;
 public class AnalLex {
 
 public String chaine;
-public int readptr;
-public int chaineLongueur;
+private int readptr;
+private int chaineLongueur;
 
 	
 /** Constructeur pour l'initialisation d'attribut(s)
