@@ -4,8 +4,8 @@ package app6;
 
 /** Cette classe effectue l'analyse syntaxique
  *  Grammaire:
- *      E -> T [+|- E]
- *      T -> F [*|/ T]
+ *      E -> T [+E|- E]
+ *      T -> F [*E|/ T]
  *      F -> operande | (E)    où operande = id | nb
  */
 public class DescenteRecursive {
@@ -125,10 +125,13 @@ public void ErreurSynt(String s) throws Exception
       ElemAST RacineAST = dr.AnalSynt();
       toWriteLect += "Lecture de l'AST trouve : " + RacineAST.LectAST() + "\n";
       System.out.println(toWriteLect);
-      toWriteEval += "Evaluation de l'AST trouve : " + RacineAST.EvalAST() + "\n";
-      System.out.println(toWriteEval);
+
       toWritePostfix += "Expression postfix de l'AST trouve : " + RacineAST.PostfixAST() + "\n";
       System.out.println(toWritePostfix);
+
+      toWriteEval += "Evaluation de l'AST trouve : " + RacineAST.EvalAST() + "\n";
+      System.out.println(toWriteEval);
+
       Writer w = new Writer(args[1],toWriteLect+toWriteEval); // Ecriture de toWrite
                                                               // dans fichier args[1]
     } catch (Exception e) {
