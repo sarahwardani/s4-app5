@@ -6,16 +6,17 @@ package app6;
  */
 public class AnalLex {
 
-// Attributs
-//  ...
 public String chaine;
-public int readptr = 0;
+private int readptr;
+private int chaineLongueur;
 
 	
 /** Constructeur pour l'initialisation d'attribut(s)
  */
   public AnalLex(String string) {  // arguments possibles
     chaine = string;
+    chaineLongueur = chaine.length();
+    readptr = 0;
   }
 
 
@@ -24,23 +25,36 @@ public int readptr = 0;
       true s'il reste encore au moins un terminal qui n'a pas ete retourne 
  */
   public boolean resteTerminal( ) {
-    if (readptr == chaine.length() -1 && chaine.charAt(readptr) == '_') return false;
+    if (readptr == chaineLongueur-1 && chaine.charAt(readptr) == '_') return false;
     return readptr < chaine.length();
   }
 
-  public boolean isDigit(char c ) {
+  private boolean isDigit(char c ) {
     return c >= '0' && c <= '9';
   }
 
-  public boolean isOperator(char c ) {
+  private boolean isOperator(char c ) {
     return c == '+' || c == '-' || c == '*' || c == '/' || c == '(' || c == ')';
   }
 
-  public boolean isLetterMaj(char c ) {
+  private Etype typeOp(char c){
+    Etype type;
+      type = switch (c) {
+          case '+' -> Etype.op_add;
+          case '-' -> Etype.op_sub;
+          case '*' -> Etype.op_mult;
+          case '/' -> Etype.op_div;
+          case '(' -> Etype.op_par_ouvrante;
+          case ')' -> Etype.op_par_fermante;
+          default -> Etype.autre;
+      };
+      return type;
+  }
+  private boolean isLetterMaj(char c ) {
     return (c >= 'A' && c <= 'Z');
   }
 
-  public boolean isLetter(char c ) {
+  private boolean isLetter(char c ) {
     return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
   }
 
@@ -54,7 +68,7 @@ public int readptr = 0;
 /** prochainTerminal() retourne le prochain terminal
       Cette methode est une implementation d'un AEF
  */  
-  public Terminal prochainTerminal( ) {
+  public Terminal prochainTerminal( ) throws Exception {
      int etat = 0;
      Terminal currTerminal = new Terminal();
      char c;
@@ -67,19 +81,21 @@ public int readptr = 0;
 
            if (isOperator(c)) {
              currTerminal.chaine +=c;
+             currTerminal.type = typeOp(c);
              continu = false;
            }
            else if (isLetterMaj(c)) {
              currTerminal.chaine +=c;
+             currTerminal.type = Etype.id;
              etat = 1;
            }
            else if (isDigit(c)) {
              currTerminal.chaine +=c;
+             currTerminal.type = Etype.nb;
              etat = 3;
            }
            else {
-             ErreurLex("erreur : ni operande, ni chiffre, ni id");
-             continu = false;
+             ErreurLex("Sequence before error: " + currTerminal.chaine + "\nCause: needed a letter, number, operator or identifer, received " + c);
            }
            break;
 
@@ -87,45 +103,43 @@ public int readptr = 0;
            c = readChar();
 
            if (isLetter(c)) {
-             etat = 1;
+             //etat = 1;
              currTerminal.chaine +=c;
            }
            else if (c == '_') {
              etat = 2;
              currTerminal.chaine +=c;
            }
-           else { // on retourne l'operande
+           else { // return the operand
              readptr--;
              continu = false;
            }
            break;
 
-         case 2: // rendu au _ dans l'operande, verifie si __
+         case 2: // current char is _, verify if another _ is after
            c = readChar();
 
-           if (c == '_') { // erreur car 2 _ de suite
-             ErreurLex("erreur : identifiant avec __");
-          //   currTerminal.chaine.;
-             continu = false;
+           if (c == '_') {
+             ErreurLex("Sequence before error: " + currTerminal.chaine + "\n Cause: needed a letter, received a _");
            }
            else if (isLetter(c)) { // on continue de verifier si operande valide
              etat = 1;
              currTerminal.chaine +=c;
            }
-           else { // on retourne l'operande valide
+           else { // return valid operand
              readptr--;
              continu = false;
            }
            break;
 
-         case 3: // verifier si chiffre valide
+         case 3: // verify when the number ends and return it
            c = readChar();
 
            if (isDigit(c)) {
-             etat = 3;
+             //etat = 3;
              currTerminal.chaine +=c;
            }
-           else { // on retourne le chiffre
+           else {
              readptr--;
              continu = false;
            }
@@ -138,8 +152,8 @@ public int readptr = 0;
  
 /** ErreurLex() envoie un message d'erreur lexicale
  */ 
-  public void ErreurLex(String s) {
-    System.out.println(s) ;
+  public void ErreurLex(String s) throws Exception {
+    throw new Exception("Erreur lexicale:\n" + s);
   }
 
   
@@ -158,9 +172,16 @@ public int readptr = 0;
 
     // Execution de l'analyseur lexical
     Terminal t = null;
-    while(lexical.resteTerminal()){
-      t = lexical.prochainTerminal();
-      toWrite +=t.chaine + "\n" ;  // toWrite contient le resultat
+    Boolean error = false;
+    while(lexical.resteTerminal() && !error){
+      try{
+        t = lexical.prochainTerminal();
+        toWrite +=t.chaine + " type: " + t.type + "\n" ;  // toWrite contient le resultat
+      }
+      catch(Exception e){
+        System.out.println(e.getMessage());
+        error = true;
+      }
     }				   //    d'analyse lexicale
     System.out.println(toWrite); 	// Ecriture de toWrite sur la console
     Writer w = new Writer(args[1],toWrite); // Ecriture de toWrite dans fichier args[1]

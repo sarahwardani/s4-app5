@@ -1,0 +1,1 @@
+Lecture de l'AST trouve : (U_x * (W_z / 35))

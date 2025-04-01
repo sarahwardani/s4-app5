@@ -7,7 +7,7 @@ package app6;
  */
 public class Terminal {
   public String chaine;
-
+  public Etype type;
 
 // Constantes et attributs
 //  ....

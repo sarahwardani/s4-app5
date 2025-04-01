@@ -1,2 +1,12 @@
-Bb_B_
-S
+X_b type: id
++ type: op_add
+8 type: nb
+/ type: op_div
+( type: op_par_ouvrante
+4 type: nb
+/ type: op_div
+2 type: nb
++ type: op_add
+2 type: nb
+) type: op_par_fermante
++ type: op_add
